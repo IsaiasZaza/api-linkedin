@@ -1,18 +1,24 @@
-// Este é o seu arquivo de schema do Prisma,
-// saiba mais sobre ele na documentação: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql" // ou "mysql"
+  url      = env("DATABASE_URL")
 }
 
-model user {
-  id        String   @id @default(uuid())
-  email String @unique
-  nome  String
-  senha String
+model Gift {
+  id         String     @id @default(uuid())
+  nome       String
+  imagem     String
+  quantidade Int
+  selection  Selection?
+}
+
+model Selection {
+  id        String @id @default(uuid())
+  nome      String
+  email     String
+  giftId    String   @unique
+  gift      Gift     @relation(fields: [giftId], references: [id])
 }

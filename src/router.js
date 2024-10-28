@@ -1,36 +1,48 @@
-const userController = require("./controllers/userController");
+const giftController = require("./controllers/giftController");
 
-const routes = (app) => {
-    app.get('/users', async (req, res) => {
-        const { status, data } = await userController.getUser();
-        res.status(status).send(data);
-    });
-
-    app.get('/user/:id', async (req, res) => {
-        const { id } = req.params;
-        const { status, data } = await userController.getUserById({ id });
-        res.status(status).send(data);
-    });
-
-
-    app.post('/users', async (req, res) => {
+const router = (app) => {
+    // Cria um novo presente
+    app.post('/gifts', async (req, res) => {
         const payload = { ...req.body };
-        const { status, data } = await userController.createUser(payload);
+        const { status, data } = await giftController.createGift(payload);
         res.status(status).send(data);
     });
 
-    app.delete('/user/:id', async (req, res) => {
-        const { id } = req.params;
-        const { status, data } = await userController.deleteUser({ id })
+    // Lista todos os presentes
+    app.get('/gifts', async (req, res) => {
+        const { status, data } = await giftController.getGifts();
         res.status(status).send(data);
-    })
+    });
 
-    app.put('/user/:id', async (req, res) => {
+    // Atualiza um presente por ID
+    app.put('/gifts/:id', async (req, res) => {
         const { id } = req.params;
-        const { nome, email } = req.body
-        const { status, data } = await userController.updateUser({ id, nome, email })
+        const payload = { ...req.body };
+        const { status, data } = await giftController.updateGift({ payload, id });
+        res.status(status).send(data);
+    });
+
+    // Remove um presente por ID
+    app.delete('/gifts/:id', async (req, res) => {
+        const { id } = req.params;
+        const { status, data } = await giftController.deleteGift({ id });
+        res.status(status).send(data);
+    });
+
+    // Seleciona um presente
+    app.post('/gifts/:giftId/select', async (req, res) => {
+        const { giftId } = req.params;
+        const { nome, email } = req.body;
+        const { status, data } = await giftController.selectGift({ giftId, nome, email });
+        res.status(status).send(data);
+    });
+
+    // Obtém a seleção de um presente
+    app.get('/gifts/:giftId/selection', async (req, res) => {
+        const { giftId } = req.params;
+        const { status, data } = await giftController.getSelectionByGiftId({ giftId });
         res.status(status).send(data);
     });
 };
 
-module.exports = routes;
+module.exports = router;
